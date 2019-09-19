@@ -41,7 +41,6 @@ class db:
         scrollbarx.grid(row=1,column=0, sticky='ew')
         scrollbarx.config(command=self.queryText.xview)
 
-        
         #=========================================Functions===============================================
         def reset_data():
             fn.read_data()
