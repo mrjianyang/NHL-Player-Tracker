@@ -1,6 +1,10 @@
 from tkinter import *
 import functions as fn
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import time
 
 class db:
     def __init__(self, root, data, query_list):
@@ -41,9 +45,17 @@ class db:
         scrollbarx.grid(row=1,column=0, sticky='ew')
         scrollbarx.config(command=self.queryText.xview)
 
+        #=========================================Creating Graphs===============================================
+
+        f, ax = plt.subplots(figsize=(11, 6))
+        canvas = FigureCanvasTkAgg(f, master=QueryFrame)
+        
+
         #=========================================Functions===============================================
         def reset_data():
             fn.read_data()
+            canvas.get_tk_widget().destroy()
+
             self.queryText.delete('1.0', END)
             self.queryText.insert(END, data)
         
@@ -52,56 +64,67 @@ class db:
             fn.select_player(data, name[0], name[1])
 
         def select_player(data, fname, lname):
+            self.queryText.delete('1.0', END)
+
             try:
                 data = data[ (data["firstName"] == fname) & (data["lastName"] == lname) ].reset_index()
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, data)
             except:
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, "Unable to Perform Query. Try Capitalizing Names")
 
         def select_season(data, stype, field):
             colname = "season"
+            self.queryText.delete('1.0', END)
+
             
             if stype == 1:
                 colname = "type"
             try:
                 if field != "ALL":
                     data = (data[(data[colname] == field)])
-                    self.queryText.delete('1.0', END)
                     self.queryText.insert(END, data)
                 else:
                     reset_data()
             except:
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, "Unable to Perform Query")
 
         def sort_DF(data, column):
+            self.queryText.delete('1.0', END)
+
             try:
                 data = data.sort_values(by=[column, "date_time_GMT"])
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, data)
             except:
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, "Unable to Perform Query")
 
         def select_opponent(data, opponent):
+            self.queryText.delete('1.0', END)
+
             try:
                 data = data[ (data["lastName"] == opponent) ].reset_index()
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, data)
             except:
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, "Unable to Perform Query")
 
         def select_pos(data, pos):
+            self.queryText.delete('1.0', END)
+
             try:
                 data = data[ (data["position"] == pos) ].reset_index()
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, data)
             except:
-                self.queryText.delete('1.0', END)
                 self.queryText.insert(END, "Unable to Perform Query")
+
+        def create_graph(data, x, y):
+            self.queryText.insert(END, "Unable to Perform Query")
+            f.clf()
+            sns.lineplot(x=data[x], y=data[y])
+            canvas.draw()
+            canvas.get_tk_widget().grid(row=0, column=0)
+
+        # def clear_graph(frame):
+        #     canvas = FigureCanvasTkAgg(f, master=frame)
+        #     canvas.cla()
 
         def help():
             self.queryText.delete('1.0', END)
@@ -109,8 +132,28 @@ class db:
 
         #=========================================Player info Graphs===============================================
 
-        # self.graphDependentvar=Button(toolbarframe, text='Dependent', width=10, font=('arial', 10, 'bold'), bd=2)
-        # self.graphDependentvar.grid(row=0, column=0)
+        self.graphDependentvar = Menubutton(toolbarframe, text='Graph', width=11, font=('arial', 10, 'bold'), bd=2, relief=RAISED)
+        self.graphDependentvar.menu = Menu(self.graphDependentvar)
+        self.graphDependentvar["menu"] = self.graphDependentvar.menu
+        self.graphDependentvar.menu.add_command(label="Goals", command= lambda: create_graph(data, "date_time_GMT", "g"))
+        self.graphDependentvar.menu.add_command(label="Assists", command= lambda: create_graph(data, "date_time_GMT", "a"))
+        self.graphDependentvar.menu.add_command(label="Shots", command= lambda: create_graph(data, "date_time_GMT", "s"))
+        self.graphDependentvar.menu.add_command(label="Time On Ice", command= lambda: create_graph(data, "date_time_GMT", "toi"))
+        self.graphDependentvar.grid(row=0, column=0)
+
+        # self.graphIndependentvar = Menubutton(toolbarframe, text='Independent', width=11, font=('arial', 10, 'bold'), bd=2, relief=RAISED)
+        # self.graphIndependentvar.menu = Menu(self.graphIndependentvar)
+        # self.graphIndependentvar["menu"] = self.graphIndependentvar.menu
+        # self.graphIndependentvar.menu.add_command(label="Date", command= lambda: select_pos(data, "date_time_GMT"))
+        # self.graphIndependentvar.grid(row=0, column=1)
+
+        # self.graphGenerateReport=Button(toolbarframe, text='Show Graph', width=10, font=('arial', 10, 'bold'), bd=2)
+        # self.graphGenerateReport.grid(row=0, column=1)
+
+        # self.graphGenerateReport=Button(toolbarframe, text='Clear Graph', width=10, font=('arial', 10, 'bold'), bd=2
+        #                                     command=fn.delete_graph)
+
+        # self.graphGenerateReport.grid(row=0, column=1)
 
         #=========================================Player info Buttons===============================================
 
@@ -118,7 +161,7 @@ class db:
                                     command=reset_data)
         self.btnSearchQuery.grid(row=1, column=0)
 
-        self.btnSearchQuery = Menubutton(toolbarframe, text='Position', width=10, font=('arial', 10, 'bold'), bd=2, relief=RAISED)
+        self.btnSearchQuery = Menubutton(toolbarframe, text='Position', width=11, font=('arial', 10, 'bold'), bd=2, relief=RAISED)
         self.btnSearchQuery.menu = Menu(self.btnSearchQuery)
         self.btnSearchQuery["menu"] = self.btnSearchQuery.menu
         self.btnSearchQuery.menu.add_command(label="LW", command= lambda: select_pos(data, "LW"))
@@ -210,7 +253,7 @@ class db:
         self.btnOpponentQuery.menu.add_command(label="Jets", command= lambda: select_opponent(data, "Jets"))               
         self.btnOpponentQuery.grid(row=1, column=9)
 
-        self.btnSearchQuery=Button(toolbarframe, text='Report', width=10, font=('arial', 10, 'bold'), bd=2)
+        self.btnSearchQuery=Button(toolbarframe, text='Twitter', width=10, font=('arial', 10, 'bold'), bd=2)
         self.btnSearchQuery.grid(row=1, column=10)
         
         self.search = Entry(toolbarframe, width=30, bd=2, relief=RAISED)
