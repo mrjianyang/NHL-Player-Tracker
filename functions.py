@@ -96,52 +96,36 @@ def select_player(data, fname, lname):
     except:
         data = "Incorrect Entry"
 #3
-def create_report(root, data):
-    f, ax = plt.subplots(figsize=(4, 6))
-    sns.lineplot(x=data["date_time"], y=data["points"])
+# def graph(frame, data, x, y):
+#     f, ax = plt.subplots(figsize=(10, 7))
+#     sns.lineplot(x=data[x], y=data[y])
 
-    canvas = FigureCanvasTkAgg(f, master=root)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=1, column=0)
+#     canvas = FigureCanvasTkAgg(f, master=frame)
+#     canvas.draw()
+#     canvas.get_tk_widget().grid(row=0, column=0)
 
-    f, ax = plt.subplots(figsize=(4, 6))
-    sns.lineplot(x=data["date_time"], y=data["goals"])
+# def clear_graph(frame):
+#     canvas = FigureCanvasTkAgg(f, master=frame)
+#     canvas.cla()
 
-    canvas = FigureCanvasTkAgg(f, master=root)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=2, column=0)
 
-    f, ax = plt.subplots(figsize=(4, 6))
-    sns.lineplot(x=data["date_time"], y=data["assits"])
+# #6
+# def Home_vs_Away_split(data, venue):
+#     team_id = data["team_id"].iloc[0]
 
-    canvas = FigureCanvasTkAgg(f, master=root)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=3, column=0)
-
-    f, ax = plt.subplots(figsize=(4, 6))
-    sns.lineplot(x=data["date_time"], y=data["shots"])
-
-    canvas = FigureCanvasTkAgg(f, master=root)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=4, column=0)
-
-#6
-def Home_vs_Away_split(data, venue):
-    team_id = data["team_id"].iloc[0]
-
-    # if (venue == "Home"):
-    #     for key, value in range(len(data[team_id])):
-    #         df_home = data[data["venue"] == i]
-    #         print(df_home)
+#     # if (venue == "Home"):
+#     #     for key, value in range(len(data[team_id])):
+#     #         df_home = data[data["venue"] == i]
+#     #         print(df_home)
     
-    # elif (venue == "Away"):
-    #     for i in range(len(team_venue[team_id])):
-    #         df_away = data[~(data["venue"] == i)]
-    #         print(df_away)
+#     # elif (venue == "Away"):
+#     #     for i in range(len(team_venue[team_id])):
+#     #         df_away = data[~(data["venue"] == i)]
+#     #         print(df_away)
 
-    # else:
-    data = data.groupby(by="venue")
-    print(data)
+#     # else:
+#     data = data.groupby(by="venue")
+#     print(data)
 
 # def sort_month_most_points(data):
 #     # tmp_data = data[ (data["season"] == curr_season ) ]
